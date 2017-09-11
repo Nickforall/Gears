@@ -4,10 +4,43 @@
         <p class="lead">
             Login to access Gears.
         </p>
-        <p class="lead">
-            <a class="btn btn-primary btn-lg" href="/signin" role="button">Log in</a>
-            <a class="btn btn-primary btn-lg" href="/signup" role="button">Sign up</a>
-        </p>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <h1>Sign up</h1>
+            <form>
+                <div class="form-group">
+                    <label for="regdispname">Display Name</label>
+                    <input type="email" class="form-control" id="dispname" aria-describedby="emailHelp" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="reqemail">Email address</label>
+                    <input type="email" class="form-control" id="regemail" aria-describedby="emailHelp" placeholder="Enter email">
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                </div>
+                <div class="form-group">
+                    <label for="regpass">Password</label>
+                    <input type="password" class="form-control" id="regpass" placeholder="Password">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+        <div class="col">
+            <h1>Sign in</h1>
+            <form>
+                <div class="form-group">
+                    <label for="loginemail">Email address</label>
+                    <input type="email" class="form-control" id="loginemail" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="loginpass">Password</label>
+                    <input type="loginpass" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
     </div>
 {{/inline}}
 {{~> (parent)~}}

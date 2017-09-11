@@ -3,10 +3,15 @@ extern crate handlebars_iron as hbs;
 extern crate serde_json;
 extern crate mount;
 extern crate staticfile;
+#[macro_use] extern crate diesel;
+#[macro_use] extern crate diesel_codegen;
+extern crate dotenv;
+#[macro_use] extern crate lazy_static;
 
 mod routes;
 mod controllers;
 mod templating;
+mod models;
 
 use mount::Mount;
 use iron::prelude::*;
@@ -15,7 +20,6 @@ use staticfile::Static;
 
 fn init() -> Chain {
     let mut router_mount = Mount::new();
-
     router_mount
         .mount("/", routes::all())
         .mount("/static/", Static::new(Path::new("src/static")));
@@ -35,7 +39,6 @@ fn main() {
     use std::sync::Arc;
     use hbs::Watchable;
 
-    let address = "localhost:3000";
     let mut chain = init();
 
     // Link the watcher
@@ -44,19 +47,19 @@ fn main() {
 
     chain.link_after(hbse_ref);
 
-    println!("Running your server on \"{}\" <3", address);
+    println!("Running your server on \"{}\" <3", ADDRESS);
 
-    Iron::new(chain).http(address).unwrap();
+    Iron::new(chain).http(ADDRESS).unwrap();
 }
 
 #[cfg(not(feature = "watch"))]
 fn main() {
-
     println!("WARNING, you are running in debugging mode without the watcher!!!");
-    let address = "localhost:3000";
     let chain = init();
 
-    println!("Running your server on \"{}\" <3", address);
+    println!("Running your server on \"{}\" <3", ADDRESS);
 
-    Iron::new(chain).http(address).unwrap();
+    Iron::new(chain).http(ADDRESS).unwrap();
 }
+
+const ADDRESS: &'static str = "localhost:3000";
