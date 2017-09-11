@@ -6,6 +6,7 @@ extern crate staticfile;
 
 mod routes;
 mod controllers;
+mod templating;
 
 use mount::Mount;
 use iron::prelude::*;
@@ -21,7 +22,7 @@ fn init() -> Chain {
 
     let mut chain = Chain::new(router_mount);
 
-    chain.link_after(routes::set_404_template("404"));
+    chain.link_after(routes::get_404_handler("404"));
 
     #[cfg(not(feature = "watch"))]
     chain.link_after(routes::templates());
