@@ -11,11 +11,12 @@ use mount::Mount;
 use iron::prelude::*;
 use std::path::Path;
 use staticfile::Static;
-use std::sync::Arc;
-use hbs::Watchable;
 
 #[cfg(feature = "watch")]
 fn main() {
+    use std::sync::Arc;
+    use hbs::Watchable;
+
     let address = "localhost:3000";
 
     let mut router_mount = Mount::new();
