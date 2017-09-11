@@ -1,7 +1,8 @@
 extern crate router;
 
 use self::router::Router;
-use super::controllers::StaticController;
+use controllers::StaticController;
+use controllers::AuthenticationController;
 use hbs::{HandlebarsEngine, DirectorySource, Template};
 use templating;
 
@@ -11,7 +12,9 @@ pub use self::notfound::NotFound;
 
 pub fn all() -> Router {
 	let mut router = Router::new();
-    router.get("/", StaticController::index, "index");
+    router.get("/", StaticController::index, "index")
+		.post("/auth/login", AuthenticationController::login, "auth_login");
+
     router
 }
 

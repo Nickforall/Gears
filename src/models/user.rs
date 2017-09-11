@@ -19,4 +19,8 @@ impl User {
             .limit(1)
             .load::<User>(&connection)
     }
+
+    pub fn authenticate(username: &str, password: &str) -> bool {
+        true
+    }
 }
