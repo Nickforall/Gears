@@ -10,7 +10,8 @@ impl StaticController {
     pub fn index(_: &mut Request) -> IronResult<Response> {
         let mut data = Map::new();
         data.insert("year".to_string(), to_json(&"2017".to_owned()));
-        
+        data.insert("parent".to_string(), to_json(&"template".to_owned()));
+
         let mut resp = Response::new();
         resp.set_mut(Template::new("index", data)).set_mut(status::Ok);
 

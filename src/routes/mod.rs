@@ -2,8 +2,7 @@ extern crate router;
 
 use self::router::Router;
 use super::controllers::StaticController;
-
-use hbs::{HandlebarsEngine, DirectorySource, MemorySource};
+use hbs::{HandlebarsEngine, DirectorySource};
 
 pub fn all() -> Router {
 	let mut router = Router::new();
@@ -16,13 +15,6 @@ pub fn templates() -> HandlebarsEngine {
 	let mut hbse = HandlebarsEngine::new();
 	// add a directory source, all files with .hbs suffix will be loaded as template
 	hbse.add(Box::new(DirectorySource::new("./src/views", ".hbs")));
-
-	let mem_templates = btreemap! {
-		"index".to_owned() => include_str!("../views/index.hbs").to_owned()
-	};
-
-	// add a memory based source
-	hbse.add(Box::new(MemorySource(mem_templates)));
 
 	// load templates from all registered sources
 	if let Err(r) = hbse.reload() {
