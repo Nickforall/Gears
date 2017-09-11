@@ -2,7 +2,13 @@ extern crate router;
 
 use self::router::Router;
 use super::controllers::StaticController;
-use hbs::{HandlebarsEngine, DirectorySource};
+use hbs::{HandlebarsEngine, DirectorySource, Template};
+use serde_json::value::{Map};
+use hbs::handlebars::to_json;
+
+mod notfound;
+
+pub use self::notfound::NotFound;
 
 pub fn all() -> Router {
 	let mut router = Router::new();
@@ -22,4 +28,11 @@ pub fn templates() -> HandlebarsEngine {
 	}
 
 	return hbse;
+}
+
+pub fn set_404_template(tpl_name: &str) -> NotFound {
+	let mut data = Map::new();
+    data.insert("parent".to_string(), to_json(&"template".to_owned()));
+
+	NotFound::new(Template::new(tpl_name, data))
 }
