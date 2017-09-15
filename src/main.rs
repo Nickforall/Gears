@@ -8,6 +8,8 @@ extern crate staticfile;
 extern crate dotenv;
 extern crate iron_sessionstorage;
 extern crate params;
+#[macro_use]
+extern crate router;
 
 mod routes;
 mod controllers;

@@ -1,6 +1,4 @@
-extern crate router;
-
-use self::router::Router;
+use router::Router;
 use controllers::StaticController;
 use controllers::AuthenticationController;
 use hbs::{HandlebarsEngine, DirectorySource, Template};
@@ -11,11 +9,10 @@ mod notfound;
 pub use self::notfound::NotFound;
 
 pub fn all() -> Router {
-	let mut router = Router::new();
-    router.get("/", StaticController::index, "index")
-		.post("/auth/login", AuthenticationController::login, "auth_login");
-
-    router
+	router!{
+        auth_login: post "/auth/login" => AuthenticationController::login,
+        index: get "/" => StaticController::index
+    }
 }
 
 pub fn templates() -> HandlebarsEngine {
@@ -29,9 +26,12 @@ pub fn templates() -> HandlebarsEngine {
 		panic!("{}", r);
 	}
 
-	return hbse;
+	// Return the Handlebars Engine
+	hbse
 }
 
 pub fn get_404_handler(tpl_name: &str) -> NotFound {
-	NotFound::new(Template::new(tpl_name,  templating::get_base_template_data()))
+	// Create and return a 404 handler with the given template
+	NotFound::new(Template::new(tpl_name,
+		templating::get_base_template_data()))
 }
