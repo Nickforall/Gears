@@ -10,12 +10,14 @@ extern crate iron_sessionstorage;
 extern crate params;
 #[macro_use]
 extern crate router;
+extern crate serde_urlencoded;
 
 mod routes;
 mod controllers;
 mod templating;
 mod models;
 mod middleware;
+mod helpers;
 
 use mount::Mount;
 use iron::prelude::*;
