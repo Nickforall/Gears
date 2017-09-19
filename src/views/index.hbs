@@ -2,26 +2,26 @@
     <div class="jumbotron">
         <h1 class="display-3">Welcome back!</h1>
         <p class="lead">
-            Login to access Gears. {{year}}
+            Login to access Gears.
         </p>
     </div>
 
     <div class="row">
         <div class="col">
             <h1>Sign up</h1>
-            <form>
+            <form action="/auth/signup" method="post">
                 <div class="form-group">
-                    <label for="regdispname">Display Name</label>
-                    <input type="email" class="form-control" id="dispname" aria-describedby="emailHelp" placeholder="Enter email">
+                    <label for="reqdispname">Display Name</label>
+                    <input type="text" class="form-control" id="reqdispname" placeholder="Johnny Doe" name="displayname">
                 </div>
                 <div class="form-group">
                     <label for="reqemail">Email address</label>
-                    <input type="email" class="form-control" id="regemail" aria-describedby="emailHelp" placeholder="Enter email">
+                    <input type="email" class="form-control" id="regemail" aria-describedby="emailHelp" placeholder="Enter email" name="email">
                     <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                 </div>
                 <div class="form-group">
                     <label for="regpass">Password</label>
-                    <input type="password" class="form-control" id="regpass" placeholder="Password">
+                    <input type="password" class="form-control" id="regpass" placeholder="Password" name="password">
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>

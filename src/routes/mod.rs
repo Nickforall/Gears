@@ -9,8 +9,10 @@ mod notfound;
 pub use self::notfound::NotFound;
 
 pub fn all() -> Router {
-	router!{
+	router! {
         auth_login: post "/auth/login" => AuthenticationController::login,
+		auth_signup: post "/auth/signup" => AuthenticationController::signup,
+		auth_logout: get "/auth/logout" => AuthenticationController::logout,
         index: get "/" => StaticController::index
     }
 }

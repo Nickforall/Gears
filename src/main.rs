@@ -33,9 +33,13 @@ fn init() -> Chain {
 
     // initialize the chain
     let mut chain = Chain::new(router_mount);
+    let session_middleware = middleware::sessions::get_session_middleware("deadbeef");
 
+    // Auth Middleware handling IsAuthenticated and sending the user when is
+    chain.link_around(middleware::authentication::AuthMiddleware);
     // Session middleware that handles a key-value like session storage
-    chain.link_around(middleware::sessions::get_session_middleware("deadbeef"));
+    chain.link_around(session_middleware);
+
     // 404 middleware that serves a 404 on non-existent routes
     chain.link_after(routes::get_404_handler("404"));
     // load the templates if we're not using the watch module

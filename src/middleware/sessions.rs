@@ -1,10 +1,9 @@
-use iron_sessionstorage::traits::*;
 use iron_sessionstorage::SessionStorage;
 use iron_sessionstorage::backends::SignedCookieBackend;
 use iron_sessionstorage::Value;
 
 pub struct Login {
-    id: String
+    pub id: String
 }
 
 impl Value for Login {

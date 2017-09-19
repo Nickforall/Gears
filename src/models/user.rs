@@ -18,7 +18,7 @@ pub struct User {
 
 impl User {
     /// Finds a user by its id
-    pub fn find_by_id(id: i32) -> QueryResult<Vec<User>> {
+    pub fn find_by_id(_: i32) -> QueryResult<Vec<User>> {
         use models::schema::users::dsl::{id, users};
 
         let connection = database::connect();
@@ -69,7 +69,8 @@ impl User {
 
         insert(new_user)
             .into(users::table)
-            .execute(&connection);
+            .execute(&connection)
+            .unwrap();
 
         User::find_by_email(mail.to_owned())
     }
