@@ -24,9 +24,6 @@ pub struct AuthHandler<H: Handler> {
 impl<H: Handler> Handler for AuthHandler<H> {
     fn handle(&self, req: &mut Request) -> IronResult<Response> {
 
-        // Execute the original handler
-        let res = self.handler.handle(req);
-
         // Check whether the login session is set.
         let is_authenticated = try!(req.session().get::<middleware::sessions::Login>()).is_some();
         req.extensions.insert::<IsAuthenticated>(is_authenticated);
@@ -39,6 +36,9 @@ impl<H: Handler> Handler for AuthHandler<H> {
             // Put the user in an extensions, so we can reach it in any controller
             req.extensions.insert::<AuthenticatedUser>(user);
         }
+
+        // Execute the original handler
+        let res = self.handler.handle(req);
 
         // Return an IronResult
         res

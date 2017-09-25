@@ -8,6 +8,9 @@ use iron::modifiers::Redirect;
 use iron_sessionstorage::SessionRequestExt;
 use std::io::Read;
 use helpers;
+use middleware::sessions::Login;
+use iron_sessionstorage::Value;
+use middleware::authentication::IsAuthenticated;
 
 #[derive(Debug)]
 pub struct LoginData {
@@ -45,8 +48,6 @@ impl SignupData {
 
         let data = helpers::decode_body(body);
 
-        // TODO: validate
-
         SignupData {
             email: data.get("email").unwrap().clone(),
             displayname: data.get("displayname").unwrap().clone(),
@@ -56,11 +57,8 @@ impl SignupData {
 }
 
 impl AuthenticationController {
+    /// Called when logging in
     pub fn login(req: &mut Request) -> IronResult<Response> {
-        use middleware::sessions::Login;
-        use iron_sessionstorage::Value;
-        use middleware::authentication::IsAuthenticated;
-
         let url: Url;
 
         // read the body from a string and receive
@@ -82,11 +80,8 @@ impl AuthenticationController {
         Ok(Response::with((status::Found, Redirect(url.clone()))))
     }
 
+    /// Called when signing up
     pub fn signup(req: &mut Request) -> IronResult<Response> {
-        use middleware::sessions::Login;
-        use iron_sessionstorage::Value;
-        use middleware::authentication::IsAuthenticated;
-
         let signup_data = SignupData::parse(req);
         let mut url = url_for!(req, "index", "status" => "successful");
 
@@ -110,9 +105,10 @@ impl AuthenticationController {
         )))
     }
 
+    /// Called when logging out
     pub fn logout(req: &mut Request) -> IronResult<Response> {
-        // Authenticate the new user
-        req.session().clear().unwrap();
+        // Empty the session
+        try!(req.session().clear());
 
         Ok(Response::with((status::Found, Redirect(url_for!(req, "index")))))
     }

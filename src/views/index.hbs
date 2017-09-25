@@ -1,4 +1,12 @@
 {{#*inline "page"}}
+    {{#if authenticated}}
+
+    {{#with user}}
+        <h1>Welcome back, <b>{{displayname}}</b></h1>
+    {{/with}}
+
+    {{else}}
+
     <div class="jumbotron">
         <h1 class="display-3">Welcome back!</h1>
         <p class="lead">
@@ -42,5 +50,7 @@
             </form>
         </div>
     </div>
+
+    {{/if}}
 {{/inline}}
 {{~> (parent)~}}

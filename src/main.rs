@@ -1,5 +1,6 @@
 extern crate iron;
 extern crate handlebars_iron as hbs;
+extern crate serde;
 extern crate serde_json;
 extern crate mount;
 extern crate staticfile;
@@ -8,9 +9,9 @@ extern crate staticfile;
 extern crate dotenv;
 extern crate iron_sessionstorage;
 extern crate params;
-#[macro_use]
-extern crate router;
+#[macro_use] extern crate router;
 extern crate serde_urlencoded;
+#[macro_use] extern crate serde_derive;
 
 mod routes;
 mod controllers;
@@ -35,10 +36,11 @@ fn init() -> Chain {
     let mut chain = Chain::new(router_mount);
     let session_middleware = middleware::sessions::get_session_middleware("deadbeef");
 
-    // Auth Middleware handling IsAuthenticated and sending the user when is
+    // Authentication middleware
     chain.link_around(middleware::authentication::AuthMiddleware);
     // Session middleware that handles a key-value like session storage
     chain.link_around(session_middleware);
+
 
     // 404 middleware that serves a 404 on non-existent routes
     chain.link_after(routes::get_404_handler("404"));

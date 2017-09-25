@@ -1,8 +1,7 @@
 use router::Router;
 use controllers::StaticController;
 use controllers::AuthenticationController;
-use hbs::{HandlebarsEngine, DirectorySource, Template};
-use templating;
+use hbs::{HandlebarsEngine, DirectorySource};
 
 mod notfound;
 
@@ -12,7 +11,8 @@ pub fn all() -> Router {
 	router! {
         auth_login: post "/auth/login" => AuthenticationController::login,
 		auth_signup: post "/auth/signup" => AuthenticationController::signup,
-		auth_logout: get "/auth/logout" => AuthenticationController::logout,
+		// must be at root level (iron-sessionstorage#8)
+		auth_logout: get "/logout" => AuthenticationController::logout,
         index: get "/" => StaticController::index
     }
 }
@@ -34,6 +34,5 @@ pub fn templates() -> HandlebarsEngine {
 
 pub fn get_404_handler(tpl_name: &str) -> NotFound {
 	// Create and return a 404 handler with the given template
-	NotFound::new(Template::new(tpl_name,
-		templating::get_base_template_data()))
+	NotFound::new(tpl_name)
 }

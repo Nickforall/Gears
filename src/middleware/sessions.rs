@@ -7,7 +7,7 @@ pub struct Login {
 }
 
 impl Value for Login {
-    fn get_key() -> &'static str { "logged_in_user" }
+    fn get_key() -> &'static str { "auth" }
     fn into_raw(self) -> String { self.id }
     fn from_raw(value: String) -> Option<Self> {
         if value.is_empty() {

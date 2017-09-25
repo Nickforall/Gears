@@ -8,11 +8,11 @@ pub enum AuthenticationError {
     Invalid
 }
 
-#[derive(Queryable, Clone)]
+#[derive(Queryable, Clone, Serialize, Deserialize, Debug)]
 pub struct User {
     pub id: i32,
-    pub displayname: String,
     pub email: String,
+    pub displayname: String,
     pub password: String,
 }
 
