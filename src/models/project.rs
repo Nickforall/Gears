@@ -1,6 +1,8 @@
 use diesel::prelude::*;
+use diesel;
 
 use models::database;
+use models::schema::projects;
 
 #[derive(Queryable, Clone, Serialize, Deserialize, Debug)]
 pub struct Project {
@@ -8,6 +10,14 @@ pub struct Project {
     pub name: String,
     pub description: String,
     pub owner_id: i32,
+}
+
+#[derive(Insertable)]
+#[table_name="projects"]
+struct NewProject<'a> {
+    name: &'a str,
+    description: &'a str,
+    owner_id: i32,
 }
 
 impl Project {
@@ -19,5 +29,26 @@ impl Project {
         projects
             .filter(owner_id.eq(owner_id))
             .load::<Project>(&connection)
+    }
+
+    pub fn create(project_name: &str, project_desc: &str, project_ownerid: i32) -> Project {
+        use diesel::insert;
+        use models;
+        use models::schema::projects::dsl::{projects, id};
+
+        let connection = database::connect();
+
+        let new_project = &NewProject {
+            name: project_name,
+            description: project_desc,
+            owner_id: project_ownerid,
+        };
+
+        insert(new_project)
+            .into(models::schema::projects::table)
+            .execute(&connection)
+            .unwrap();
+
+        projects.order(id.desc()).first(&connection).unwrap()
     }
 }

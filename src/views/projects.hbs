@@ -1,0 +1,22 @@
+{{#*inline "page"}}
+    <h1>Lists projects</h1>
+    <table class="table">
+        <thead class="thead-default">
+            <tr>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each projects as |p|~}}
+                    <tr>
+                        <th scope="row">{{p.name}}</th>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm">Go &raquo;</button>
+                        </td>
+                    </tr>
+            {{/each ~}}
+        </tbody>
+    </table>
+{{/inline}}
+{{~> (parent)~}}
