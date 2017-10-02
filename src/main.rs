@@ -12,6 +12,7 @@ extern crate params;
 #[macro_use] extern crate router;
 extern crate serde_urlencoded;
 #[macro_use] extern crate serde_derive;
+extern crate bcrypt;
 
 mod routes;
 mod controllers;

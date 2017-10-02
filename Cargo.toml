@@ -21,6 +21,7 @@ iron-sessionstorage = "0.6.6"
 params = "0.6.0"
 validator = "0.6.0"
 serde_urlencoded = "0.5.1"
+bcrypt = "0.1"
 
 [features]
 watch = ["handlebars-iron/watch"]
