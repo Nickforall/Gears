@@ -10,6 +10,7 @@ pub use self::notfound::NotFound;
 
 pub fn all() -> Router {
 	router! {
+		projects_new: post "/projects/new" => ProjectController::new,
 		projects_ls: get "/projects" => ProjectController::list,
         auth_login: post "/auth/login" => AuthenticationController::login,
 		auth_signup: post "/auth/signup" => AuthenticationController::signup,

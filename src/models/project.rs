@@ -22,12 +22,12 @@ struct NewProject<'a> {
 
 impl Project {
     /// Finds all projects by owner id
-    pub fn find_all_by_owner(_: i32) -> QueryResult<Vec<Project>> {
+    pub fn find_all_by_owner(in_owner_id: i32) -> QueryResult<Vec<Project>> {
         use models::schema::projects::dsl::{owner_id, projects};
 
         let connection = database::connect();
         projects
-            .filter(owner_id.eq(owner_id))
+            .filter(owner_id.eq(in_owner_id))
             .load::<Project>(&connection)
     }
 
