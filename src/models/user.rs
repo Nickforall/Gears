@@ -19,12 +19,12 @@ pub struct User {
 
 impl User {
     /// Finds a user by its id
-    pub fn find_by_id(_: i32) -> QueryResult<Vec<User>> {
+    pub fn find_by_id(uid: i32) -> QueryResult<Vec<User>> {
         use models::schema::users::dsl::{id, users};
 
         let connection = database::connect();
         users
-            .filter(id.eq(id))
+            .filter(id.eq(uid))
             .limit(1)
             .load::<User>(&connection)
     }

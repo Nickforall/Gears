@@ -2,6 +2,7 @@ use iron_sessionstorage::SessionStorage;
 use iron_sessionstorage::backends::SignedCookieBackend;
 use iron_sessionstorage::Value;
 
+#[derive(Debug)]
 pub struct Login {
     pub id: String
 }
