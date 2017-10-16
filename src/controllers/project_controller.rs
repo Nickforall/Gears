@@ -29,7 +29,6 @@ impl NewProjectData {
     }
 }
 
-
 pub struct ProjectController;
 
 impl ProjectController {
@@ -53,11 +52,15 @@ impl ProjectController {
             let data = NewProjectData::parse(req);
             Project::create(
                 data.name.as_str(),
-                data.name.as_str(),
+                data.description.as_str(),
                 req.extensions.get::<AuthenticatedUser>().unwrap().id
             );
         }
 
         Ok(Response::with((status::Found, Redirect(url_for!(req, "index")))))
+    }
+
+    pub fn get(req: &mut Request) -> IronResult<Response> {
+        unimplemented!()
     }
 }

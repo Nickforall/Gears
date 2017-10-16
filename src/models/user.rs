@@ -2,7 +2,7 @@ use diesel::prelude::*;
 
 use models::database;
 use models::schema::users;
-use bcrypt::{ hash, verify, DEFAULT_COST };
+use pwhash::bcrypt;
 
 pub enum AuthenticationError {
     NonExistent,
@@ -47,7 +47,8 @@ impl User {
 
         match user_vec.first() {
             Some(u) => {
-                if verify(inpassword.as_str(), u.password.as_str()).unwrap() {
+
+                if bcrypt::verify(inpassword.as_str(), u.password.as_str()) {
                     return Ok(u.clone())
                 } else {
                     return Err(AuthenticationError::Invalid)
@@ -62,8 +63,7 @@ impl User {
         use diesel::insert;
 
         let connection = database::connect();
-        // this is a variable here because it doesn't live long enough inside &NewUser
-        let hashed_pass = hash(pass, DEFAULT_COST).unwrap();
+        let hashed_pass = bcrypt::hash(pass).unwrap();
 
         let new_user = &NewUser {
             password: hashed_pass.as_str(),

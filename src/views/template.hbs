@@ -18,17 +18,22 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarText">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown">
+                            {{#with user}}
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Welcome back, {{displayname}}
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" href="/logout">Logout</a>
+                                </div>
+                            {{else}}
+                            <a class="nav-link" href="#" id="navbarDropdownMenuLink">
+                                Login to access
+                            </a>
+                            {{/with}}
                         </li>
                     </ul>
-                    <span class="navbar-text">
-                        {{#with user}}
-                            Welcome back, {{displayname}}
-                        {{else}}
-                            Log in to access gears
-                        {{/with}}
-                    </span>
                 </div>
 
             </div>
