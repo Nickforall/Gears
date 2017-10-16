@@ -44,7 +44,6 @@ fn init() -> Chain {
     // Session middleware that handles a key-value like session storage
     chain.link_around(session_middleware);
 
-
     // 404 middleware that serves a 404 on non-existent routes
     chain.link_after(routes::get_404_handler("404"));
     // load the templates if we're not using the watch module

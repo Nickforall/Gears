@@ -8,6 +8,8 @@ use middleware::authentication::AuthenticatedUser;
 use middleware::authentication::IsAuthenticated;
 use std::io::Read;
 use helpers;
+use router::Router;
+use routes;
 
 #[derive(Debug)]
 pub struct NewProjectData {
@@ -57,10 +59,33 @@ impl ProjectController {
             );
         }
 
-        Ok(Response::with((status::Found, Redirect(url_for!(req, "index")))))
+        Ok(Response::with((status::Found, Redirect(url_for!(req, "projects_ls")))))
     }
 
     pub fn get(req: &mut Request) -> IronResult<Response> {
-        unimplemented!()
+        let id = req.extensions.get::<Router>().unwrap().find("id").unwrap_or("0").to_string();
+        let project;
+
+        // check whether the id is a number
+        match id.parse::<i32>() {
+            Ok(numeric_id) => {
+                // if it is, throw it into our find or fail
+                match Project::find_or_fail(numeric_id) {
+                    Some(p) => {
+                        project = p;
+                    },
+                    None => return Ok(routes::notfound::get_404_response("404", req))
+                };
+            },
+            Err(_) => return Ok(routes::notfound::get_404_response("404", req))
+        };
+
+        let mut data = templating::get_base_template_data(req);
+        data.insert("project".to_owned(), to_json(&project));
+
+        let mut resp = Response::new();
+        resp.set_mut(Template::new("projects/project", data)).set_mut(status::Ok);
+
+        Ok(resp)
     }
 }

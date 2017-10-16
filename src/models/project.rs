@@ -30,6 +30,25 @@ impl Project {
             .load::<Project>(&connection)
     }
 
+    pub fn find_or_fail(project_id: i32) -> Option<Project> {
+        use models::schema::projects::dsl::{id, projects};
+
+        let connection = database::connect();
+        let proj = projects
+            .filter(id.eq(project_id))
+            .load::<Project>(&connection)
+            .unwrap();
+
+        if proj.len() < 1 {
+            return None
+        }
+
+        match proj.first() {
+            Some(p) => Some(p.clone()),
+            None => None
+        }
+    }
+
     pub fn create(project_name: &str, project_desc: &str, project_ownerid: i32) -> Project {
         use diesel::insert;
         use models;

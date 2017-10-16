@@ -4,7 +4,7 @@ use controllers::AuthenticationController;
 use controllers::ProjectController;
 use hbs::{HandlebarsEngine, DirectorySource};
 
-mod notfound;
+pub mod notfound;
 
 pub use self::notfound::NotFound;
 
@@ -12,6 +12,7 @@ pub fn all() -> Router {
 	router! {
 		projects_new: post "/projects/new" => ProjectController::new,
 		projects_ls: get "/projects" => ProjectController::list,
+		projects_detail: get "/projects/:id" => ProjectController::get,
         auth_login: post "/auth/login" => AuthenticationController::login,
 		auth_signup: post "/auth/signup" => AuthenticationController::signup,
 		// must be at root level (iron-sessionstorage#8)
