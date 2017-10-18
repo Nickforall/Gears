@@ -1,0 +1,47 @@
+{{#*inline "page"}}
+    {{#with project}}
+        <h1>
+            {{name}}</br>
+            <small style="color: #777">{{description}}</small>
+        </h1>
+
+    {{/with}}
+    <hr />
+    <div class="row">
+        <div class="col">
+            <h3>Users</h3>
+
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Displayname</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Membership</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>Jacob</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td>Larry</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col">
+            <h3>Issues</h3>
+
+        </div>
+    </div>
+{{/inline}}
+{{~> (parent)~}}
