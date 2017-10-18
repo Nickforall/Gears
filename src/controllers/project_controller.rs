@@ -25,8 +25,8 @@ impl NewProjectData {
         let data = helpers::decode_body(body);
 
         NewProjectData {
-            name: data.get("description").unwrap().clone(),
-            description: data.get("name").unwrap().clone(),
+            name: data.get("name").unwrap().clone(),
+            description: data.get("description").unwrap().clone(),
         }
     }
 }
