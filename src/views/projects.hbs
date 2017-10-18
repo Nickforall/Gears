@@ -12,7 +12,10 @@
                     <tr>
                         <th scope="row">{{p.name}}</th>
                         <td>
-                            <button type="button" class="btn btn-primary btn-sm">Go &raquo;</button>
+                            <a role="button" class="btn btn-primary btn-sm"
+                               href="/projects/{{p.id}}">
+                                Go &raquo;
+                            </a>
                         </td>
                     </tr>
             {{/each ~}}
