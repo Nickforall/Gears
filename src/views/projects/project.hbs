@@ -1,11 +1,9 @@
 {{#*inline "page"}}
-    {{#with project}}
         <h1>
-            {{name}}</br>
-            <small style="color: #777">{{description}}</small>
+            {{project.name}}</br>
+            <small style="color: #777">{{project.description}}</small>
         </h1>
 
-    {{/with}}
     <hr />
     <div class="row">
         <div class="col">
@@ -16,28 +14,40 @@
                     <tr>
                         <th scope="col">Displayname</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Membership</th>
+                        <th scope="col">Assigned</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td></td>
-                    </tr>
+                    {{#each users as |u|}}
+                        {{#nequals u.id ../project.owner_id}}
+                            <tr>
+                                <th scope="row">{{u.displayname}}</th>
+                                <td>
+                                    {{u.email}}
+                                    {{debug }}
+                                </td>
+                                <td>
+
+                                    <input
+                                        type="checkbox"
+                                        {{#equals (lookup ../user_project_data (toString u.id)) "true"}}
+                                            checked
+                                        {{/equals}}
+                                        data-toggle="toggle" />
+                                </td>
+                            </tr>
+                        {{/nequals}}
+                    {{/each ~}}
                 </tbody>
             </table>
         </div>
+        <div class="col">
+            {{#equals user.id ../project.owner_id}}
+            <h3>Settings</h3>
+            {{/equals}}
+        </div>
+    </div>
+    <div class="row">
         <div class="col">
             <h3>Issues</h3>
 

@@ -3,7 +3,7 @@ use diesel::prelude::*;
 use models::database;
 use models::schema::projects;
 
-#[derive(Queryable, Clone, Serialize, Deserialize, Debug)]
+#[derive(Queryable, Associations, Identifiable, Clone, Serialize, Deserialize, Debug)]
 pub struct Project {
     pub id: i32,
     pub name: String,

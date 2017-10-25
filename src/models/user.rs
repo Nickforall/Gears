@@ -9,7 +9,7 @@ pub enum AuthenticationError {
     Invalid
 }
 
-#[derive(Queryable, Clone, Serialize, Deserialize, Debug)]
+#[derive(Queryable, Associations, Identifiable, Clone, Serialize, Deserialize, Debug)]
 pub struct User {
     pub id: i32,
     pub email: String,
@@ -18,6 +18,14 @@ pub struct User {
 }
 
 impl User {
+    pub fn all() -> QueryResult<Vec<User>> {
+        use models::schema::users::dsl::users;
+
+        let connection = database::connect();
+        users
+            .load::<User>(&connection)
+    }
+
     /// Finds a user by its id
     pub fn find_by_id(uid: i32) -> QueryResult<Vec<User>> {
         use models::schema::users::dsl::{id, users};
@@ -77,6 +85,23 @@ impl User {
             .unwrap();
 
         User::find_by_email(mail.to_owned())
+    }
+
+    pub fn is_in_project(&self, proj: i32) -> bool {
+        use models::schema::user_projects;
+        use models::projects::user_to_project::UserProject;
+
+        let connection = database::connect();
+        let p_ids = UserProject::belonging_to(self)
+            .select(user_projects::dsl::project_id)
+            .load::<i32>(&connection)
+            .expect("Could not load user's projects");
+
+        if p_ids.iter().any(|x| x == &proj) {
+            return true;
+        }
+
+        return false;
     }
 }
 

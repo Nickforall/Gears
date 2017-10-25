@@ -4,6 +4,8 @@ use hbs::handlebars::to_json;
 use iron::Request;
 use middleware;
 
+pub mod helpers;
+
 pub fn get_base_template_data(req: &mut Request) -> Map<String, Value> {
     let mut map = Map::new();
 

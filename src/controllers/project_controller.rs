@@ -7,9 +7,11 @@ use models::project::Project;
 use middleware::authentication::AuthenticatedUser;
 use middleware::authentication::IsAuthenticated;
 use std::io::Read;
+use std::collections::HashMap;
 use helpers;
 use router::Router;
 use routes;
+use models::user::User;
 
 #[derive(Debug)]
 pub struct NewProjectData {
@@ -82,6 +84,17 @@ impl ProjectController {
 
         let mut data = templating::get_base_template_data(req);
         data.insert("project".to_owned(), to_json(&project));
+
+        // get all users and their project permissions
+        let users = User::all().unwrap();
+        let mut project_user_perms = HashMap::new();
+        // clone the users (because borrowing issues in template engine) and iterate
+        for u in users.clone() {
+            project_user_perms.insert(u.id, u.is_in_project(project.id));
+        }
+
+        data.insert("users".to_owned(), to_json(&users));
+        data.insert("user_project_data".to_owned(), to_json(&project_user_perms));
 
         let mut resp = Response::new();
         resp.set_mut(Template::new("projects/project", data)).set_mut(status::Ok);
