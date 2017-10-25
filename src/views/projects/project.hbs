@@ -42,8 +42,21 @@
             </table>
         </div>
         <div class="col">
-            {{#equals user.id ../project.owner_id}}
-            <h3>Settings</h3>
+            {{#equals user.id project.owner_id}}
+                <h3>Settings</h3>
+                <form class="" action="/projects/{{project.id}}/edit" method="post">
+                    <div class="form-group">
+                        <label for="projName">Project Name</label>
+                        <input name="name" type="text" class="form-control" id="projName" value="{{project.name}}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projDesc">Project Description</label>
+                        <textarea name="description" class="form-control" id="projDesc" rows="3">{{project.description}}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Edit</button>
+                </form>
             {{/equals}}
         </div>
     </div>

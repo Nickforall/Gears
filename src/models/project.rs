@@ -1,3 +1,4 @@
+use diesel;
 use diesel::prelude::*;
 
 use models::database;
@@ -68,5 +69,18 @@ impl Project {
             .unwrap();
 
         projects.order(id.desc()).first(&connection).unwrap()
+    }
+
+    pub fn update(&self, project_name: &str, project_desc: &str) {
+        use models::schema::projects::dsl::{description, id, name};
+
+        let connection = database::connect();
+
+        diesel::update(self)
+            .set((
+                name.eq(project_name),
+                description.eq(project_desc)
+            ))
+            .execute(&connection);
     }
 }

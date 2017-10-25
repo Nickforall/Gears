@@ -14,19 +14,19 @@ use routes;
 use models::user::User;
 
 #[derive(Debug)]
-pub struct NewProjectData {
+pub struct ProjectData {
     name: String,
     description: String
 }
 
-impl NewProjectData {
+impl ProjectData {
     pub fn parse(req: &mut Request) -> Self {
         let mut body = String::new();
         req.body.read_to_string(&mut body).unwrap();
 
         let data = helpers::decode_body(body);
 
-        NewProjectData {
+        ProjectData {
             name: data.get("name").unwrap().clone(),
             description: data.get("description").unwrap().clone(),
         }
@@ -53,7 +53,7 @@ impl ProjectController {
 
     pub fn new(req: &mut Request) -> IronResult<Response> {
         if *req.extensions.get::<IsAuthenticated>().unwrap() {
-            let data = NewProjectData::parse(req);
+            let data = ProjectData::parse(req);
             Project::create(
                 data.name.as_str(),
                 data.description.as_str(),
@@ -83,7 +83,6 @@ impl ProjectController {
         };
 
         let mut data = templating::get_base_template_data(req);
-        data.insert("project".to_owned(), to_json(&project));
 
         // get all users and their project permissions
         let users = User::all().unwrap();
@@ -93,12 +92,54 @@ impl ProjectController {
             project_user_perms.insert(u.id, u.is_in_project(project.id));
         }
 
+        // insert data into map
+        data.insert("project".to_owned(), to_json(&project));
         data.insert("users".to_owned(), to_json(&users));
         data.insert("user_project_data".to_owned(), to_json(&project_user_perms));
 
+        // make response with the data
         let mut resp = Response::new();
         resp.set_mut(Template::new("projects/project", data)).set_mut(status::Ok);
 
         Ok(resp)
+    }
+
+    pub fn edit(req: &mut Request) -> IronResult<Response>  {
+        let id = "8";
+        let project;
+
+        // check whether the id is a number
+        match id.parse::<i32>() {
+            Ok(numeric_id) => {
+                // if it is, throw it into our find or fail
+                match Project::find_or_fail(numeric_id) {
+                    Some(p) => {
+                        project = p;
+                    },
+                    None => return Ok(routes::notfound::get_404_response("404", req))
+                };
+            },
+            Err(_) => return Ok(routes::notfound::get_404_response("404", req))
+        };
+
+        // check whether we can edit this project
+        if req.extensions.get::<AuthenticatedUser>().unwrap().id != project.owner_id {
+            return Ok(routes::notfound::get_404_response("404", req))
+        }
+
+        //TODO: validation
+
+        // parse and validate data
+        let form = ProjectData::parse(req);
+
+        // update
+        project.update(
+            form.name.as_str(),
+            form.description.as_str(),
+        );
+
+        Ok(Response::with((status::Found, Redirect(url_for!(req, "projects_ls",
+            "id" => project.id.to_string()
+        )))))
     }
 }

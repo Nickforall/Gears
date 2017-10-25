@@ -14,6 +14,7 @@ pub fn all() -> Router {
 		projects_new: post "/projects/new" => ProjectController::new,
 		projects_ls: get "/projects" => ProjectController::list,
 		projects_detail: get "/projects/:id" => ProjectController::get,
+		projects_edit: post "/projects/:id/edit" => ProjectController::edit,
         auth_login: post "/auth/login" => AuthenticationController::login,
 		auth_signup: post "/auth/signup" => AuthenticationController::signup,
 		// must be at root level (iron-sessionstorage#8)
