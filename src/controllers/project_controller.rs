@@ -138,7 +138,7 @@ impl ProjectController {
             form.description.as_str(),
         );
 
-        Ok(Response::with((status::Found, Redirect(url_for!(req, "projects_ls",
+        Ok(Response::with((status::Found, Redirect(url_for!(req, "projects_edit",
             "id" => project.id.to_string()
         )))))
     }
