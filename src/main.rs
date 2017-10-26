@@ -1,3 +1,6 @@
+// diesel needs this, because the macros of model generation got a bit too big
+#![recursion_limit="128"]
+
 extern crate iron;
 extern crate handlebars_iron as hbs;
 extern crate serde;

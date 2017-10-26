@@ -1,1 +1,1 @@
-DROP TABLE issues
+DROP TABLE posts

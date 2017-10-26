@@ -89,7 +89,7 @@ impl User {
 
     pub fn is_in_project(&self, proj: i32) -> bool {
         use models::schema::user_projects;
-        use models::projects::user_to_project::UserProject;
+        use models::project::user_to_project::UserProject;
 
         let connection = database::connect();
         let p_ids = UserProject::belonging_to(self)

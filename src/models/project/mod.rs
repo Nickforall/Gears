@@ -1,3 +1,7 @@
+pub mod user_to_project;
+pub mod issue;
+pub mod post;
+
 use diesel;
 use diesel::prelude::*;
 

@@ -1,0 +1,33 @@
+{{#*inline "page"}}
+    <h1>
+        {{project.name}}</br>
+    </h1>
+
+    <ul class="nav nav-tabs mb-4 mt-5">
+        <li class="nav-item">
+            <a class="nav-link" href="../">Project</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="/projects/{{project.id}}/posts">Posts</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/projects/{{project.id}}/issues">Issues</a>
+        </li>
+    </ul>
+
+    <h2>Status updates</h2>
+
+    {{#each posts as |p|}}
+        <div class="card">
+            <div class="card-block p-3">
+                <p>
+                    {{p.content}}
+                </p>
+                <b>By {{p.user_id}} posted on {{p.posted_at}}</b>
+
+            </div>
+        </div>
+    {{/each}}
+
+{{/inline}}
+{{~> (parent)~}}

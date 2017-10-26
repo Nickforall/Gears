@@ -1,10 +1,21 @@
 {{#*inline "page"}}
-        <h1>
-            {{project.name}}</br>
-            <small style="color: #777">{{project.description}}</small>
-        </h1>
+    <h1>
+        {{project.name}}</br>
+        <small style="color: #777">{{project.description}}</small>
+    </h1>
 
-    <hr />
+    <ul class="nav nav-tabs mb-4 mt-5">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Project</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/projects/{{project.id}}/posts">Posts</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/projects/{{project.id}}/issues">Issues</a>
+        </li>
+    </ul>
+
     <div class="row">
         <div class="col">
             <h3>Users</h3>
@@ -27,13 +38,14 @@
                                     {{debug }}
                                 </td>
                                 <td>
-
                                     <input
                                         type="checkbox"
                                         {{#equals (lookup ../user_project_data (toString u.id)) "true"}}
                                             checked
                                         {{/equals}}
-                                        data-toggle="toggle" />
+                                        data-toggle="toggle"
+                                        disabled
+                                    />
                                 </td>
                             </tr>
                         {{/nequals}}
@@ -42,8 +54,8 @@
             </table>
         </div>
         <div class="col">
-            {{#equals user.id project.owner_id}}
                 <h3>Settings</h3>
+                {{#equals user.id project.owner_id}}
                 <form class="" action="/projects/{{project.id}}/edit" method="post">
                     <div class="form-group">
                         <label for="projName">Project Name</label>
@@ -57,14 +69,15 @@
 
                     <button type="submit" class="btn btn-primary">Edit</button>
                 </form>
-            {{/equals}}
+                {{/equals}}
+                {{#nequals user.id project.owner_id}}
+                    <p>
+                        You have to be a project-owner to manage this project
+                    </p>
+                {{/nequals}}
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <h3>Issues</h3>
 
-        </div>
-    </div>
+
 {{/inline}}
 {{~> (parent)~}}
