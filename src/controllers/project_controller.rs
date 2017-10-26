@@ -90,7 +90,7 @@ impl ProjectController {
         let mut project_user_perms = HashMap::new();
         // clone the users (because borrowing issues in template engine) and iterate
         for u in users.clone() {
-            project_user_perms.insert(u.id, u.is_in_project(project.id));
+            project_user_perms.insert(u.id, u.is_in_project(&project));
         }
 
         // insert data into map
