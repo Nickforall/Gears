@@ -2,6 +2,7 @@ use diesel::prelude::*;
 
 use models::database;
 use models::schema::users;
+use models::project::Project;
 use pwhash::bcrypt;
 
 pub enum AuthenticationError {
@@ -87,9 +88,13 @@ impl User {
         User::find_by_email(mail.to_owned())
     }
 
-    pub fn is_in_project(&self, proj: i32) -> bool {
+    pub fn is_in_project(&self, proj: &Project) -> bool {
         use models::schema::user_projects;
         use models::project::user_to_project::UserProject;
+
+        if self.id == proj.owner_id {
+            return true;
+        }
 
         let connection = database::connect();
         let p_ids = UserProject::belonging_to(self)
@@ -97,7 +102,7 @@ impl User {
             .load::<i32>(&connection)
             .expect("Could not load user's projects");
 
-        if p_ids.iter().any(|x| x == &proj) {
+        if p_ids.iter().any(|x| x == &proj.id) {
             return true;
         }
 
