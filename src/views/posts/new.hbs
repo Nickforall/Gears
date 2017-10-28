@@ -5,7 +5,7 @@
 
     <ul class="nav nav-tabs mb-4 mt-5">
         <li class="nav-item">
-            <a class="nav-link" href="./">Project</a>
+            <a class="nav-link" href="../">Project</a>
         </li>
         <li class="nav-item">
             <a class="nav-link active" href="/projects/{{project.id}}/posts">Posts</a>
@@ -16,21 +16,17 @@
     </ul>
 
     <h2>
-        Status updates
-        <a href="/projects/{{project.id}}/posts/new" role="button" class="btn btn-primary md-auto">Create New</a>
+        New Post
+        <a href="../" role="button" class="btn btn-primary md-auto">Back</a>
     </h2>
 
-    {{#each posts as |p|}}
-        <div class="card mb-3">
-            <div class="card-block p-3">
-                <p>
-                    {{p.content}}
-                </p>
-                <b>By {{p.user_id}} posted on</b> {{time p.posted_at}}
-
-            </div>
+    <form class="" action="/projects/{{project.id}}/posts/new" method="post">
+        <div class="form-group">
+            <textarea name="content" class="form-control" id="projDesc" rows="6" placeholder="Your post"></textarea>
         </div>
-    {{/each}}
+
+        <button type="submit" class="btn btn-primary">Post</button>
+    </form>
 
 {{/inline}}
 {{~> (parent)~}}

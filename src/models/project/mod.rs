@@ -4,6 +4,8 @@ pub mod post;
 
 use diesel;
 use diesel::prelude::*;
+use iron::Response;
+use iron::prelude::*;
 
 use models::database;
 use models::schema::projects;
@@ -76,7 +78,7 @@ impl Project {
     }
 
     pub fn update(&self, project_name: &str, project_desc: &str) {
-        use models::schema::projects::dsl::{description, id, name};
+        use models::schema::projects::dsl::{description, name};
 
         let connection = database::connect();
 
@@ -85,6 +87,31 @@ impl Project {
                 name.eq(project_name),
                 description.eq(project_desc)
             ))
-            .execute(&connection);
+            .execute(&connection)
+            .unwrap();
+    }
+
+    pub fn from_request(parameter: &str, req: &mut Request) -> Result<Project, Response> {
+        use routes;
+        use router::Router;
+
+        let id = req.extensions.get::<Router>().unwrap().find(parameter).unwrap_or("0").to_string();
+        let project;
+
+        // check whether the id is a number
+        match id.parse::<i32>() {
+            Ok(numeric_id) => {
+                // if it is, throw it into our find or fail
+                match Project::find_or_fail(numeric_id) {
+                    Some(p) => {
+                        project = p;
+                    },
+                    None => return Err(routes::notfound::get_404_response("404", req))
+                };
+            },
+            Err(_) => return Err(routes::notfound::get_404_response("404", req))
+        };
+
+        Ok(project)
     }
 }

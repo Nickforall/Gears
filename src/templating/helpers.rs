@@ -35,6 +35,19 @@ pub fn debug (h: &Helper, _: &Handlebars, rc: &mut RenderContext) -> Result<(), 
     Ok(())
 }
 
+pub fn fmt_time (h: &Helper, _: &Handlebars, rc: &mut RenderContext) -> Result<(), RenderError> {
+    use chrono::{NaiveDateTime};
+
+    // just for example, add error check for unwrap
+    let arg = h.param(0).unwrap().value();
+
+    let dt = NaiveDateTime::from_timestamp(arg.as_i64().unwrap(), 0);
+
+    rc.writer().write(dt.format("%Y-%m-%d %H:%M:%S").to_string().into_bytes().as_ref())?;
+
+    Ok(())
+}
+
 pub fn to_string (h: &Helper, _: &Handlebars, rc: &mut RenderContext) -> Result<(), RenderError> {
     // just for example, add error check for unwrap
     let arg = h.param(0).unwrap().value();

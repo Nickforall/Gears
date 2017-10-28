@@ -43,8 +43,10 @@
                                         {{#equals (lookup ../user_project_data (toString u.id)) "true"}}
                                             checked
                                         {{/equals}}
+                                        {{#nequals user.id project.owner_id}}
+                                            disabled
+                                        {{/nequals}}
                                         data-toggle="toggle"
-                                        disabled
                                     />
                                 </td>
                             </tr>

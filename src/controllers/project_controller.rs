@@ -9,10 +9,8 @@ use middleware::authentication::IsAuthenticated;
 use std::io::Read;
 use std::collections::HashMap;
 use helpers;
-use router::Router;
 use routes;
 use models::user::User;
-use models::project::post::Post;
 
 #[derive(Debug)]
 pub struct ProjectData {
@@ -66,21 +64,10 @@ impl ProjectController {
     }
 
     pub fn get(req: &mut Request) -> IronResult<Response> {
-        let id = req.extensions.get::<Router>().unwrap().find("id").unwrap_or("0").to_string();
         let project;
-
-        // check whether the id is a number
-        match id.parse::<i32>() {
-            Ok(numeric_id) => {
-                // if it is, throw it into our find or fail
-                match Project::find_or_fail(numeric_id) {
-                    Some(p) => {
-                        project = p;
-                    },
-                    None => return Ok(routes::notfound::get_404_response("404", req))
-                };
-            },
-            Err(_) => return Ok(routes::notfound::get_404_response("404", req))
+        match Project::from_request("id", req) {
+            Ok(p) => project = p,
+            Err(r) => return Ok(r)
         };
 
         let mut data = templating::get_base_template_data(req);
@@ -106,21 +93,10 @@ impl ProjectController {
     }
 
     pub fn edit(req: &mut Request) -> IronResult<Response> {
-        let id = req.extensions.get::<Router>().unwrap().find("id").unwrap_or("0").to_string();
         let project;
-
-        // check whether the id is a number
-        match id.parse::<i32>() {
-            Ok(numeric_id) => {
-                // if it is, throw it into our find or fail
-                match Project::find_or_fail(numeric_id) {
-                    Some(p) => {
-                        project = p;
-                    },
-                    None => return Ok(routes::notfound::get_404_response("404", req))
-                };
-            },
-            Err(_) => return Ok(routes::notfound::get_404_response("404", req))
+        match Project::from_request("id", req) {
+            Ok(p) => project = p,
+            Err(r) => return Ok(r)
         };
 
         // check whether we can edit this project
@@ -142,35 +118,5 @@ impl ProjectController {
         Ok(Response::with((status::Found, Redirect(url_for!(req, "projects_edit",
             "id" => project.id.to_string()
         )))))
-    }
-
-    pub fn posts(req: &mut Request) -> IronResult<Response> {
-        let id = req.extensions.get::<Router>().unwrap().find("id").unwrap_or("0").to_string();
-        let project;
-
-        // check whether the id is a number
-        match id.parse::<i32>() {
-            Ok(numeric_id) => {
-                // if it is, throw it into our find or fail
-                match Project::find_or_fail(numeric_id) {
-                    Some(p) => {
-                        project = p;
-                    },
-                    None => return Ok(routes::notfound::get_404_response("404", req))
-                };
-            },
-            Err(_) => return Ok(routes::notfound::get_404_response("404", req))
-        };
-
-        let mut data = templating::get_base_template_data(req);
-        let posts = Post::all_by_project(&project).unwrap();
-
-        data.insert("project".to_owned(), to_json(&project));
-        data.insert("posts".to_owned(), to_json(&posts));
-
-        let mut resp = Response::new();
-        resp.set_mut(Template::new("projects/posts", data)).set_mut(status::Ok);
-
-        Ok(resp)
     }
 }

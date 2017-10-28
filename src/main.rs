@@ -18,6 +18,7 @@ extern crate serde_urlencoded;
 extern crate pwhash;
 #[macro_use]
 extern crate lazy_static;
+extern crate chrono;
 
 mod routes;
 mod controllers;
