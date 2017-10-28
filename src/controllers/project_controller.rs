@@ -11,6 +11,7 @@ use std::collections::HashMap;
 use helpers;
 use routes;
 use models::user::User;
+use helpers::error::ErrorBag;
 
 #[derive(Debug)]
 pub struct ProjectData {
@@ -19,10 +20,22 @@ pub struct ProjectData {
 }
 
 impl ProjectData {
-    pub fn parse(req: &mut Request) -> Self {
-        let mut body = String::new();
-        req.body.read_to_string(&mut body).unwrap();
+    pub fn validate(body: String) -> ErrorBag {
+        let data = helpers::decode_body(body);
+        let mut errors = ErrorBag::new();
 
+        if data.get("name").unwrap().is_empty() {
+            errors.add("A project Name Is Required");
+        }
+
+        if data.get("description").unwrap().is_empty() {
+            errors.add("A project Description Is Required");
+        }
+
+        return errors
+    }
+
+    pub fn parse(body: String) -> Self {
         let data = helpers::decode_body(body);
 
         ProjectData {
@@ -51,14 +64,24 @@ impl ProjectController {
     }
 
     pub fn new(req: &mut Request) -> IronResult<Response> {
-        if *req.extensions.get::<IsAuthenticated>().unwrap() {
-            let data = ProjectData::parse(req);
-            Project::create(
-                data.name.as_str(),
-                data.description.as_str(),
-                req.extensions.get::<AuthenticatedUser>().unwrap().id
-            );
+        let mut body = String::new();
+        req.body.read_to_string(&mut body).unwrap();
+
+        let errors = ProjectData::validate(body.clone());
+        if errors.has_errors() {
+            return Ok(Response::with((
+                status::Found,
+                Redirect(url_for!(req, "index", "errors" => errors.encode()))
+            )));
         }
+
+        let data = ProjectData::parse(body);
+
+        Project::create(
+            data.name.as_str(),
+            data.description.as_str(),
+            req.extensions.get::<AuthenticatedUser>().unwrap().id
+        );
 
         Ok(Response::with((status::Found, Redirect(url_for!(req, "projects_ls")))))
     }
@@ -104,10 +127,19 @@ impl ProjectController {
             return Ok(routes::notfound::get_404_response("404", req))
         }
 
-        //TODO: validation
+        let mut body = String::new();
+        req.body.read_to_string(&mut body).unwrap();
+
+        let errors = ProjectData::validate(body.clone());
+        if errors.has_errors() {
+            return Ok(Response::with((
+                status::Found,
+                Redirect(url_for!(req, "projects_detail", "errors" => errors.encode(), "id" => project.id.to_string()))
+            )));
+        }
 
         // parse and validate data
-        let form = ProjectData::parse(req);
+        let form = ProjectData::parse(body);
 
         // update
         project.update(
@@ -115,7 +147,7 @@ impl ProjectController {
             form.description.as_str(),
         );
 
-        Ok(Response::with((status::Found, Redirect(url_for!(req, "projects_edit",
+        Ok(Response::with((status::Found, Redirect(url_for!(req, "projects_detail",
             "id" => project.id.to_string()
         )))))
     }

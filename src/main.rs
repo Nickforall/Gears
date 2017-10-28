@@ -19,6 +19,7 @@ extern crate pwhash;
 #[macro_use]
 extern crate lazy_static;
 extern crate chrono;
+extern crate base64;
 
 mod routes;
 mod controllers;

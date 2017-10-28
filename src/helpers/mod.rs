@@ -1,3 +1,5 @@
+pub mod error;
+
 use serde_urlencoded;
 
 use std::collections::HashMap;

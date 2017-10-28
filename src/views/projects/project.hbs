@@ -58,6 +58,16 @@
         <div class="col">
                 <h3>Settings</h3>
                 {{#equals user.id project.owner_id}}
+                {{#if has_errors}}
+                <div class="alert alert-danger" role="alert">
+                    <h4 class="alert-heading">Uh Oh, something went wrong</h4>
+                    <ul>
+                        {{#each errors as |e|}}
+                            <li>{{e}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
+                {{/if}}
                 <form class="" action="/projects/{{project.id}}/edit" method="post">
                     <div class="form-group">
                         <label for="projName">Project Name</label>

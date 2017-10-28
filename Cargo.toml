@@ -23,6 +23,7 @@ validator = "0.6.0"
 serde_urlencoded = "0.5.1"
 pwhash = "0.1"
 chrono = "0.4"
+base64 = "0.7.0"
 
 [features]
 watch = ["handlebars-iron/watch"]
