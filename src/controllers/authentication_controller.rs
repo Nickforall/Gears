@@ -5,11 +5,9 @@ use models::user::User;
 use iron::prelude::*;
 use iron::{status, Url};
 use iron::modifiers::Redirect;
-use iron_sessionstorage::SessionRequestExt;
 use std::io::Read;
 use helpers;
-use middleware::sessions::Login;
-use iron_sessionstorage::Value;
+use middleware::sessions::{Session, SessionKey};
 use middleware::authentication::IsAuthenticated;
 
 #[derive(Debug)]
@@ -71,7 +69,10 @@ impl AuthenticationController {
             match User::authenticate(login_data.email, login_data.password) {
                 Ok(user) => {
                     url = url_for!(req, "index", "status" => "success");
-                    req.session().set(Login::from_raw(user.id.to_string()).unwrap()).unwrap();
+                    // Authenticate the new user
+                    req.extensions.insert::<SessionKey>(Session {
+                        id: user.id
+                    });
                 },
                 Err(_) => url = url_for!(req, "index", "status" => "failure"),
             }
@@ -97,7 +98,9 @@ impl AuthenticationController {
             ).unwrap().first().unwrap().clone();
 
             // Authenticate the new user
-            req.session().set(Login::from_raw(user.id.to_string()).unwrap()).unwrap();
+            req.extensions.insert::<SessionKey>(Session {
+                id: user.id
+            });
         }
 
         Ok(Response::with((status::Found,
@@ -108,7 +111,7 @@ impl AuthenticationController {
     /// Called when logging out
     pub fn logout(req: &mut Request) -> IronResult<Response> {
         // Empty the session
-        try!(req.session().clear());
+        req.extensions.remove::<SessionKey>();
 
         Ok(Response::with((status::Found, Redirect(url_for!(req, "index")))))
     }

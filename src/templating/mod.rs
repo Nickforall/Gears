@@ -7,6 +7,9 @@ use middleware;
 use helpers::error::ErrorBag;
 use params;
 use params::Params;
+use iron_csrf::csrf::CsrfToken;
+use rand;
+use rand::Rng;
 
 pub mod helpers;
 
@@ -30,8 +33,16 @@ pub fn get_base_template_data(req: &mut Request) -> Map<String, Value> {
         let user = req.extensions.get::<middleware::authentication::AuthenticatedUser>().unwrap();
         map.insert("user".to_owned(), to_json(user));
     }
+
+    let token: String = rand::thread_rng()
+        .gen_iter::<char>()
+        .take(64)
+        .collect(); //req.extensions.get::<CsrfToken>().unwrap();
+
     map.insert("has_errors".to_string(), to_json(&has_errors));
     map.insert("errors".to_string(), to_json(&errors));
+    map.insert("csrftoken".to_string(), to_json(&token.as_str()));
+
     map.insert("parent".to_string(), to_json(&"template".to_owned()));
 
     map

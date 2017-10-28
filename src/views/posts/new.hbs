@@ -21,6 +21,7 @@
     </h2>
 
     <form class="" action="/projects/{{project.id}}/posts/new" method="post">
+        <input type="hidden" name="csrf-token" value="{{{csrftoken}}}">
         <div class="form-group">
             <textarea name="content" class="form-control" id="projDesc" rows="6" placeholder="Your post"></textarea>
         </div>

@@ -76,6 +76,7 @@
             <div class="col">
                 <h1>Sign up</h1>
                 <form action="/auth/signup" method="post">
+                    <input type="hidden" name="csrf-token" value="{{{csrftoken}}}">
                     <div class="form-group">
                         <label for="reqdispname">Display Name</label>
                         <input type="text" class="form-control" id="reqdispname" placeholder="Johnny Doe" name="displayname">
@@ -96,6 +97,7 @@
             <div class="col">
                 <h1>Sign in</h1>
                 <form action="/auth/login" method="post">
+                    <input type="hidden" name="csrf-token" value="{{{csrftoken}}}">
                     <div class="form-group">
                         <label for="loginemail">Email address</label>
                         <input type="email" class="form-control" id="loginemail" placeholder="Enter email" name="email">

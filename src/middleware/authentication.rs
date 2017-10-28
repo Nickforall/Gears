@@ -1,9 +1,9 @@
 use iron::prelude::*;
-use iron::typemap;
-use iron_sessionstorage::SessionRequestExt;
+use typemap;
 use middleware;
 use iron::{Handler, AroundMiddleware};
 use models::user::User;
+use middleware::sessions::SessionKey;
 
 pub struct AuthMiddleware;
 pub struct IsAuthenticated;
@@ -23,15 +23,25 @@ pub struct AuthHandler<H: Handler> {
 
 impl<H: Handler> Handler for AuthHandler<H> {
     fn handle(&self, req: &mut Request) -> IronResult<Response> {
+        let is_authenticated;
+        let id = match req.extensions.remove::<SessionKey>() {
+            Some(mut session) => {
+                is_authenticated = true;
+                session.id
+            },
+            None => {
+                is_authenticated = false;
+                0
+            }
+        };
+
 
         // Check whether the login session is set.
-        let is_authenticated = try!(req.session().get::<middleware::sessions::Login>()).is_some();
         req.extensions.insert::<IsAuthenticated>(is_authenticated);
 
         // If the user is authenticated, we want to get their user info
         if is_authenticated {
-            let logindata = req.session().get::<middleware::sessions::Login>().unwrap().unwrap();
-            let user = User::find_by_id(logindata.id.parse::<i32>().unwrap()).unwrap().first().unwrap().clone();
+            let user = User::find_by_id(id).unwrap().first().unwrap().clone();
 
             // Put the user in an extensions, so we can reach it in any controller
             req.extensions.insert::<AuthenticatedUser>(user);

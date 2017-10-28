@@ -69,6 +69,7 @@
                 </div>
                 {{/if}}
                 <form class="" action="/projects/{{project.id}}/edit" method="post">
+                    <input type="hidden" name="csrf-token" value="{{{csrftoken}}}">
                     <div class="form-group">
                         <label for="projName">Project Name</label>
                         <input name="name" type="text" class="form-control" id="projName" value="{{project.name}}">

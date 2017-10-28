@@ -10,16 +10,17 @@ extern crate staticfile;
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_codegen;
 extern crate dotenv;
-extern crate iron_sessionstorage;
 extern crate params;
 #[macro_use] extern crate router;
 extern crate serde_urlencoded;
 #[macro_use] extern crate serde_derive;
 extern crate pwhash;
-#[macro_use]
-extern crate lazy_static;
 extern crate chrono;
 extern crate base64;
+extern crate iron_csrf;
+extern crate secure_session;
+extern crate typemap;
+extern crate rand;
 
 mod routes;
 mod controllers;
@@ -32,8 +33,14 @@ use mount::Mount;
 use iron::prelude::*;
 use std::path::Path;
 use staticfile::Static;
+use dotenv::dotenv;
+use std::env;
+use iron::AroundMiddleware;
 
 fn init() -> Chain {
+    dotenv().ok();
+    let cryptokey = env::var("CRYPTO_KEY").expect("CRYPTO_KEY must be set");
+
     let mut router_mount = Mount::new();
     // Mount the static folder on the static route
     router_mount
@@ -42,12 +49,12 @@ fn init() -> Chain {
 
     // initialize the chain
     let mut chain = Chain::new(router_mount);
-    let session_middleware = middleware::sessions::get_session_middleware("deadbeef");
-
-    // Authentication middleware
+    let sessions = middleware::sessions::get_session_middleware(cryptokey.clone());
+    let csrf = middleware::csrf::get_csrf_middleware(cryptokey.clone());
     chain.link_around(middleware::authentication::AuthMiddleware);
-    // Session middleware that handles a key-value like session storage
-    chain.link_around(session_middleware);
+
+    let handler = sessions.around(Box::new(chain));
+    let mut chain = Chain::new(handler);
 
     // 404 middleware that serves a 404 on non-existent routes
     chain.link_after(routes::get_404_handler("404"));

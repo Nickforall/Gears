@@ -1,26 +1,21 @@
-use iron_sessionstorage::SessionStorage;
-use iron_sessionstorage::backends::SignedCookieBackend;
-use iron_sessionstorage::Value;
+use secure_session::middleware::{SessionMiddleware, SessionConfig};
+use secure_session::session::{SessionManager, ChaCha20Poly1305SessionManager};
+use typemap;
 
-#[derive(Debug)]
-pub struct Login {
-    pub id: String
+#[derive(Serialize, Deserialize)]
+pub struct Session {
+    pub id: i32,
 }
 
-impl Value for Login {
-    fn get_key() -> &'static str { "auth" }
-    fn into_raw(self) -> String { self.id }
-    fn from_raw(value: String) -> Option<Self> {
-        if value.is_empty() {
-            None
-        } else {
-            Some(Login { id: value })
-        }
-    }
+pub struct SessionKey {}
+
+impl typemap::Key for SessionKey {
+    type Value = Session;
 }
 
-pub fn get_session_middleware(secret: &str) -> SessionStorage<SignedCookieBackend> {
-    let secret_bytes = secret.as_bytes().to_vec();
+pub fn get_session_middleware(secret: String) -> SessionMiddleware<Session, SessionKey, ChaCha20Poly1305SessionManager<Session>> {
+    let manager = ChaCha20Poly1305SessionManager::<Session>::from_password(secret.as_bytes());
+    let config = SessionConfig::default();
 
-    SessionStorage::new(SignedCookieBackend::new(secret_bytes))
+    SessionMiddleware::<Session, SessionKey, ChaCha20Poly1305SessionManager<Session>>::new(manager, config)
 }
