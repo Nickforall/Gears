@@ -9,6 +9,7 @@ use std::io::Read;
 use helpers;
 use middleware::sessions::{Session, SessionKey};
 use middleware::authentication::IsAuthenticated;
+use helpers::error::ErrorBag;
 
 #[derive(Debug)]
 pub struct LoginData {
@@ -39,11 +40,44 @@ pub struct SignupData {
 }
 
 impl SignupData {
-    /// Parses a request into LoginData
-    pub fn parse(req: &mut Request) -> Self {
-        let mut body = String::new();
-        req.body.read_to_string(&mut body).unwrap();
+    pub fn validate(body: String) -> ErrorBag {
+        use gild::ValidationChain;
+        use gild::validators;
 
+        let data = helpers::decode_body(body);
+        let mut errors = ErrorBag::new();
+
+        if data.get("email").unwrap().is_empty() {
+            errors.add("An email Is Required");
+        } else {
+            if ValidationChain::new()
+               .add(validators::IsEmail::new())
+               .validate(data.get("email").unwrap().clone())
+               .is_err() {
+                   errors.add("Email Address isn't valid");
+            }
+        }
+
+        if data.get("displayname").unwrap().is_empty() {
+            errors.add("A displayname Is Required");
+        }
+
+        if data.get("password").unwrap().is_empty() {
+            errors.add("A password Is Required");
+        } else {
+            if ValidationChain::new()
+               .add(validators::MinSize::new(6))
+               .validate(data.get("password").unwrap().clone())
+               .is_err() {
+                   errors.add("Your password should be at least 6 characters");
+            }
+        }
+
+        errors
+    }
+
+    /// Parses a request into SignupData
+    pub fn parse(body: String) -> Self {
         let data = helpers::decode_body(body);
 
         SignupData {
@@ -83,7 +117,18 @@ impl AuthenticationController {
 
     /// Called when signing up
     pub fn signup(req: &mut Request) -> IronResult<Response> {
-        let signup_data = SignupData::parse(req);
+        let mut body = String::new();
+        req.body.read_to_string(&mut body).unwrap();
+
+        let errors = SignupData::validate(body.clone());
+        if errors.has_errors() {
+            return Ok(Response::with((
+                status::Found,
+                Redirect(url_for!(req, "index", "errors" => errors.encode()))
+            )));
+        }
+
+        let signup_data = SignupData::parse(body);
         let mut url = url_for!(req, "index", "status" => "successful");
 
         if *req.extensions.get::<IsAuthenticated>().unwrap() {

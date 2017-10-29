@@ -21,6 +21,7 @@ extern crate iron_csrf;
 extern crate secure_session;
 extern crate typemap;
 extern crate rand;
+extern crate gild;
 
 mod routes;
 mod controllers;

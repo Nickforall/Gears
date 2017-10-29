@@ -27,6 +27,7 @@ iron-csrf = { path = "../iron-csrf" }
 secure-session = "*"
 typemap = "*"
 rand = "0.3"
+gild = "0.1.1"
 
 [features]
 watch = ["handlebars-iron/watch"]
