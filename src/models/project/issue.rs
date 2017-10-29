@@ -17,6 +17,7 @@ struct Issue {
     content: Option<String>,
     is_resolved: bool,
     assignee: i32,
+    title: Option<String>
 }
 
 impl Issue {

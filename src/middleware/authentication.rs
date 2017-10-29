@@ -1,9 +1,10 @@
 use iron::prelude::*;
 use typemap;
-use middleware;
-use iron::{Handler, AroundMiddleware};
+use iron::{Handler, AroundMiddleware, status};
 use models::user::User;
-use middleware::sessions::SessionKey;
+use middleware::sessions::{SessionKey, Session};
+use routes;
+use iron::modifiers::RedirectRaw;
 
 pub struct AuthMiddleware;
 pub struct IsAuthenticated;
@@ -25,7 +26,7 @@ impl<H: Handler> Handler for AuthHandler<H> {
     fn handle(&self, req: &mut Request) -> IronResult<Response> {
         let is_authenticated;
         let id = match req.extensions.remove::<SessionKey>() {
-            Some(mut session) => {
+            Some(session) => {
                 is_authenticated = true;
                 session.id
             },
@@ -34,7 +35,6 @@ impl<H: Handler> Handler for AuthHandler<H> {
                 0
             }
         };
-
 
         // Check whether the login session is set.
         req.extensions.insert::<IsAuthenticated>(is_authenticated);
@@ -45,6 +45,19 @@ impl<H: Handler> Handler for AuthHandler<H> {
 
             // Put the user in an extensions, so we can reach it in any controller
             req.extensions.insert::<AuthenticatedUser>(user);
+
+            // Re-insert session if everything went alright
+            req.extensions.insert::<SessionKey>(Session {
+                id: id
+            });
+        }
+
+        // only check auth for routed requests
+        if !req.url.path().join("/").starts_with("static/") {
+            // if the route isn't public and you aren't authenticated, redirect to login
+            if !routes::get_public_routes().contains(&req.url.path().join("/")) && !is_authenticated {
+                return Ok(Response::with((status::Found, RedirectRaw("/".to_owned()))))
+            }
         }
 
         // Execute the original handler

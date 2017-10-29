@@ -8,30 +8,25 @@
             <a class="nav-link" href="./">Project</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="/projects/{{project.id}}/posts">Posts</a>
+            <a class="nav-link" href="/projects/{{project.id}}/posts">Posts</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/projects/{{project.id}}/issues">Issues</a>
+            <a class="nav-link active" href="/projects/{{project.id}}/issues">Issues</a>
         </li>
     </ul>
 
     <h2>
-        Status updates
-        {{debug has_perks}}
-        {{#if has_perks}}
-            <a href="/projects/{{project.id}}/posts/new" role="button" class="btn btn-primary md-auto">
-                Create New
-            </a>
-        {{/if}}
+        Project Issues
+        <a href="/projects/{{project.id}}/issues/new" role="button" class="btn btn-primary md-auto">Create New</a>
     </h2>
 
     {{#each posts as |p|}}
         <div class="card mb-3">
             <div class="card-block p-3">
                 <p>
-                    {{p.post.content}}
+                    {{p.content}}
                 </p>
-                <b>By {{p.user.displayname}} posted on</b> {{time p.post.posted_at}}
+                <b>By {{p.user_id}} posted on</b> {{time p.posted_at}}
 
             </div>
         </div>

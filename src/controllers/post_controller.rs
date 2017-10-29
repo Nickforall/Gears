@@ -7,7 +7,9 @@ use models::project::post::Post;
 use iron::modifiers::Redirect;
 use helpers;
 use std::io::Read;
+use models::user::User;
 use middleware::authentication::AuthenticatedUser;
+use routes;
 
 struct PostData {
     post: String
@@ -26,10 +28,16 @@ impl PostData {
     }
 }
 
+// this is a struct used for json serialization
+#[derive(Serialize, Deserialize)]
+struct PostUserPair {
+    post: Post,
+    user: User,
+}
+
 pub struct PostController;
 
 impl PostController {
-    //TODO: inner join user.
     pub fn ls(req: &mut Request) -> IronResult<Response> {
         let project;
         match Project::from_request("id", req) {
@@ -38,8 +46,20 @@ impl PostController {
         };
 
         let mut data = templating::get_base_template_data(req);
-        let posts = Post::all_by_project(&project).unwrap();
+        let mut posts = Vec::new();
 
+        // make post user tuple ready for json serialization
+        for p in Post::all_by_project(&project).unwrap() {
+            posts.push(PostUserPair {
+                post: p.0,
+                user: p.1,
+            });
+        }
+
+        let has_perks =  req.extensions.get::<AuthenticatedUser>().unwrap().id == project.owner_id
+            || req.extensions.get::<AuthenticatedUser>().unwrap().is_in_project(&project);
+
+        data.insert("has_perks".to_owned(), to_json(&has_perks));
         data.insert("project".to_owned(), to_json(&project));
         data.insert("posts".to_owned(), to_json(&posts));
 
@@ -55,6 +75,12 @@ impl PostController {
             Ok(p) => project = p,
             Err(r) => return Ok(r)
         };
+
+        // Extensions.get must be inline, because otherwise the "req" reference is borrowed for too long.
+        if req.extensions.get::<AuthenticatedUser>().unwrap().id != project.owner_id
+            && !req.extensions.get::<AuthenticatedUser>().unwrap().is_in_project(&project) {
+            return Ok(routes::notfound::get_404_response("404", req))
+        }
 
         let mut data = templating::get_base_template_data(req);
         data.insert("project".to_owned(), to_json(&project));
@@ -72,7 +98,11 @@ impl PostController {
             Err(r) => return Ok(r)
         };
 
-        //TODO; check if in project
+        // Extensions.get must be inline, because otherwise the "req" reference is borrowed for too long.
+        if req.extensions.get::<AuthenticatedUser>().unwrap().id != project.owner_id
+            && !req.extensions.get::<AuthenticatedUser>().unwrap().is_in_project(&project) {
+            return Ok(routes::notfound::get_404_response("404", req))
+        }
 
         let form = PostData::parse(req);
 

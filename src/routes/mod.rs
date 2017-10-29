@@ -17,6 +17,8 @@ pub fn all() -> Router {
 		projects_posts: get "/projects/:id/posts" => PostController::ls,
 		projects_posts_new: get "/projects/:id/posts/new" => PostController::create_form,
 		projects_posts_post: post "/projects/:id/posts/new" => PostController::post_form,
+		projects_search: get "/projects/search/:query" => ProjectController::search,
+		projects_toggle_user: post "/projects/:id/users/toggle" => ProjectController::toggle_user,
         auth_login: post "/auth/login" => AuthenticationController::login,
 		auth_signup: post "/auth/signup" => AuthenticationController::signup,
 		// must be at root level (iron-sessionstorage#8)
@@ -45,6 +47,15 @@ pub fn templates() -> HandlebarsEngine {
 
 	// Return the Handlebars Engine
 	hbse
+}
+
+/// Gets the names of routes that require authentication
+pub fn get_public_routes() -> Vec<String> {
+	vec![
+		"".to_owned(),
+		"auth/login".to_owned(),
+		"auth/signup".to_owned()
+	]
 }
 
 pub fn get_404_handler(tpl_name: &str) -> NotFound {

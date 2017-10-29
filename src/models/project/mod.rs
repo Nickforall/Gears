@@ -27,6 +27,15 @@ struct NewProject<'a> {
 }
 
 impl Project {
+    pub fn all() -> Vec<Project> {
+        use models::schema::projects::dsl::projects;
+
+        let connection = database::connect();
+        projects
+            .load::<Project>(&connection)
+            .unwrap()
+    }
+
     /// Finds all projects by owner id
     pub fn find_all_by_owner(in_owner_id: i32) -> QueryResult<Vec<Project>> {
         use models::schema::projects::dsl::{owner_id, projects};
@@ -44,7 +53,7 @@ impl Project {
         let proj = projects
             .filter(id.eq(project_id))
             .load::<Project>(&connection)
-            .unwrap();
+            .expect("Removing user from project failed");
 
         if proj.len() < 1 {
             return None
@@ -72,7 +81,7 @@ impl Project {
         insert(new_project)
             .into(models::schema::projects::table)
             .execute(&connection)
-            .unwrap();
+            .expect("Removing user from project failed");
 
         projects.order(id.desc()).first(&connection).unwrap()
     }
@@ -113,5 +122,27 @@ impl Project {
         };
 
         Ok(project)
+    }
+
+    pub fn search_by_name(query: &str) -> QueryResult<Vec<Project>> {
+        use models::schema::projects::dsl::{projects, name};
+
+        let connection = database::connect();
+        let pattern = format!("%{}%", query);
+
+        projects
+            .filter(name.like(pattern))
+            .load::<Project>(&connection)
+    }
+
+    pub fn search_by_description(query: &str) -> QueryResult<Vec<Project>> {
+        use models::schema::projects::dsl::{projects, description};
+
+        let connection = database::connect();
+        let pattern = format!("%{}%", query);
+
+        projects
+            .filter(description.like(pattern))
+            .load::<Project>(&connection)
     }
 }

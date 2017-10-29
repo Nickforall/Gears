@@ -20,6 +20,10 @@
         <div class="col">
             <h3>Users</h3>
 
+            <form id="hiddentoggle" action="/projects/{{project.id}}/users/toggle" method="post">
+                <input type="hidden" name="userid" value="" id="toggled-id">
+            </form>
+
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
@@ -40,13 +44,17 @@
                                 <td>
                                     <input
                                         type="checkbox"
+                                        class="useradd-toggle"
                                         {{#equals (lookup ../user_project_data (toString u.id)) "true"}}
                                             checked
                                         {{/equals}}
-                                        {{#nequals user.id project.owner_id}}
+                                        {{#nequals ../user.id ../project.owner_id}}
                                             disabled
                                         {{/nequals}}
                                         data-toggle="toggle"
+                                        data-userid="{{u.id}}"
+                                        data-onstyle="success"
+                                        data-offstyle="danger"
                                     />
                                 </td>
                             </tr>

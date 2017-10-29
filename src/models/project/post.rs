@@ -19,13 +19,17 @@ pub struct Post {
 }
 
 impl Post {
-    pub fn all_by_project(project: &Project) -> QueryResult<Vec<Post>> {
+    pub fn all_by_project(project: &Project) -> QueryResult<Vec<(Post, User)>> {
         use models::schema::posts::dsl::id;
+        use models::schema::users;
+
+        joinable!(posts -> users (user_id));
 
         let connection = database::connect();
         Post::belonging_to(project)
+            .inner_join(users::table)
             .order(id.desc())
-            .load::<Post>(&connection)
+            .load::<(Post, User)>(&connection)
     }
 
     pub fn create(project: i32, user: i32, pcontent: String) {
@@ -45,7 +49,7 @@ impl Post {
         insert(new_post)
             .into(models::schema::posts::table)
             .execute(&connection)
-            .unwrap();
+            .expect("Removing user from project failed");
     }
 }
 

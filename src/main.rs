@@ -28,6 +28,7 @@ mod templating;
 mod models;
 mod middleware;
 mod helpers;
+mod macros;
 
 use mount::Mount;
 use iron::prelude::*;
@@ -49,6 +50,7 @@ fn init() -> Chain {
 
     // initialize the chain
     let mut chain = Chain::new(router_mount);
+
     let sessions = middleware::sessions::get_session_middleware(cryptokey.clone());
     let csrf = middleware::csrf::get_csrf_middleware(cryptokey.clone());
     chain.link_around(middleware::authentication::AuthMiddleware);
@@ -61,6 +63,7 @@ fn init() -> Chain {
     // load the templates if we're not using the watch module
     #[cfg(not(feature = "watch"))]
     chain.link_after(routes::templates());
+
 
     chain
 }
